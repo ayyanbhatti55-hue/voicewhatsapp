@@ -17,7 +17,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Create Android Project Structure & Gradle Wrapper
+      - name: Create Android Project Structure
         run: |
           mkdir -p app/src/main/java/com/example/voicewhatsapp
           mkdir -p app/src/main/res/layout
@@ -72,6 +72,17 @@ jobs:
           include ':app'
           EOF
 
+          cat << 'EOF' > gradle/wrapper/gradle-wrapper.properties
+          distributionBase=GRADLE_USER_HOME
+          distributionPath=wrapper/dists
+          distributionUrl=https\://services.gradle.org/distributions/gradle-8.0-bin.zip
+          zipStoreBase=GRADLE_USER_HOME
+          zipStorePath=wrapper/dists
+          EOF
+
+          mkdir -p gradle/wrapper
+          # Download gradle wrapper jar if needed or let gradle build handle it
+          
           cat << 'EOF' > app/src/main/AndroidManifest.xml
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
               <application
@@ -99,11 +110,16 @@ jobs:
           </resources>
           EOF
 
-          # Gradle Wrapper generate کریں تاکہ build چل سکے
-          gradle wrapper
+      - name: Download Gradle Wrapper Jar
+        run: |
+          mkdir -p gradle/wrapper
+          curl -L -o gradle/wrapper/gradle-wrapper.jar https://raw.githubusercontent.com/gradle/gradle/v8.0.0/subprojects/wrapper/src/main/resources/org/gradle/wrapper/gradle-wrapper.jar || true
+          gradle -version
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
