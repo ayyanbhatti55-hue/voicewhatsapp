@@ -17,14 +17,14 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Create Android Project Structure
+      - name: Create Android Project Structure & Gradle Wrapper
         run: |
           mkdir -p app/src/main/java/com/example/voicewhatsapp
           mkdir -p app/src/main/res/layout
           mkdir -p app/src/main/res/values
           
           mv MainActivity.java app/src/main/java/com/example/voicewhatsapp/ 2>/dev/null || true
-          mv activity_main.xml app/src/main/res/layout/
+          mv activity_main.xml app/src/main/res/layout/ 2>/dev/null || true
           
           cat << 'EOF' > app/build.gradle
           plugins {
@@ -74,7 +74,6 @@ jobs:
 
           cat << 'EOF' > app/src/main/AndroidManifest.xml
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-              <uses-package android:name="com.whatsapp" />
               <application
                   android:allowBackup="true"
                   android:icon="@mipmap/ic_launcher"
@@ -99,6 +98,9 @@ jobs:
               <string name="app_name">VoiceWhatsApp</string>
           </resources>
           EOF
+
+          # Gradle Wrapper generate کریں تاکہ build چل سکے
+          gradle wrapper
 
       - name: Build Debug APK
         run: ./gradlew assembleDebug
