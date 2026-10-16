@@ -111,11 +111,12 @@ jobs:
       - name: Download Gradle Wrapper Jar
         run: |
           curl -L -o gradle/wrapper/gradle-wrapper.jar https://raw.githubusercontent.com/gradle/gradle/v8.0.0/subprojects/wrapper/src/main/resources/org/gradle/wrapper/gradle-wrapper.jar || true
+          chmod +x gradlew || true
 
       - name: Build Debug APK
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: assembleDebug
+        run: |
+          gradle wrapper
+          ./gradlew assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
