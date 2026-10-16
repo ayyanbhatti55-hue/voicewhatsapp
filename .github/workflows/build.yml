@@ -19,6 +19,7 @@ jobs:
 
       - name: Download Gradle Wrapper Jar
         run: |
+          mkdir -p gradle/wrapper
           gradle wrapper --gradle-version 8.7
           chmod +x gradlew || true
 
